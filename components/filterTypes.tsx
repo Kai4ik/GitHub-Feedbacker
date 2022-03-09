@@ -16,7 +16,7 @@ const FilterTypes = () => {
       wrap="wrap"
       gridGap="10px 6px"
       bg="#fff"
-      borderRadius="12px"
+      borderRadius="6px"
       color="#3182CE"
     >
       {types.map((type, index) => (

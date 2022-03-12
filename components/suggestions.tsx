@@ -57,15 +57,14 @@ const Suggestions = () => {
           <Icon as={FcIdea} />
           <TagLabel ml="6px">6 suggestions</TagLabel>
         </Tag>
-        <Flex align="center" w="30%" fontWeight="600">
-          <Text fontSize="0.6rem" color="#E8E8E8" mr="10px" w="50px">
+        <Flex align="center" fontWeight="600" color="gray.200" gridGap="10px">
+          <Text fontSize="0.6rem" w="50px">
             Sort by:
           </Text>
           <Select
             variant="unstyled"
             fontSize="0.6rem"
             iconSize="0.8rem"
-            color="#fff"
             display="flex"
           >
             {sortOptions.map((element, index) => (
@@ -84,9 +83,9 @@ const Suggestions = () => {
           size="xs"
           leftIcon={<AddIcon />}
           fontSize="7px"
-          bg="#805AD5"
-          color="#f9f9f9"
-          _hover={{ background: "#f9f9f9", color: "#805AD5" }}
+          bg="purple.500"
+          color="gray.50"
+          _hover={{ background: "gray.50", color: "purple.500" }}
         >
           <Text fontSize="0.6rem" textTransform="capitalize">
             add feedback

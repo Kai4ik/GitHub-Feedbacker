@@ -24,8 +24,8 @@ const FilterTypes = () => {
           size="xs"
           key={index}
           _hover={{
-            background: "#3182CE",
-            color: "#fff",
+            background: "blue.500",
+            color: "white",
           }}
         >
           <Text fontSize="0.6rem" textTransform="capitalize">

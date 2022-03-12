@@ -11,18 +11,18 @@ import { ChevronUpIcon, ChatIcon } from "@chakra-ui/icons";
 
 const Suggestion = ({ data }) => {
   return (
-    <Flex bg="#fff" mt="2vh" borderRadius="6px" p="1rem ">
+    <Flex bg="white" mt="2vh" borderRadius="6px" p="1rem ">
       <Flex
         direction="column"
-        bg="#EDF2F7"
+        bg="gray.100"
         borderRadius="6px"
         w="30px"
         h="36px"
         justify="center"
         align="center"
       >
-        <ChevronUpIcon fontSize="12px" color="#3182CE" />
-        <Text fontSize="0.5rem" fontWeight="700" color="#373E68">
+        <ChevronUpIcon fontSize="12px" color="blue.500" />
+        <Text fontSize="0.5rem" fontWeight="700" color="gray.600">
           {data.upvotes}
         </Text>
       </Flex>
@@ -30,25 +30,28 @@ const Suggestion = ({ data }) => {
         <Heading
           as="h4"
           fontSize="0.6rem"
-          color="#373E68"
+          color="gray.600"
           textTransform="capitalize"
         >
           {data.title}
         </Heading>
         <Text fontSize="0.6rem">{data.description}</Text>
         <Tag
-          fontSize="0.5rem"
+          fontSize="0.55rem"
           fontWeight="700"
           textTransform="capitalize"
-          color="#3182CE"
+          color="blue.500"
           size="sm"
           mt="4px"
         >
           {data.category}
         </Tag>
+        <Text fontSize="0.6rem" fontWeight="700" color="gray.600" mt="6px">
+          Created by:
+        </Text>
       </Flex>
       <Spacer />
-      <Tag bg="transparent" height="50%" m="auto" color="#373E68">
+      <Tag bg="transparent" height="50%" m="auto" color="gray.600">
         <TagLeftIcon boxSize="10px" as={ChatIcon} mt="2px" />
         <TagLabel fontWeight="700" fontSize="10px">
           {data.comments}

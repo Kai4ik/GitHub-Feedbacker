@@ -1,11 +1,27 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import { useState } from "react";
 
 import FilterTypes from "../components/filterTypes";
+import Profile from "../components/profile";
 import Suggestions from "../components/suggestions";
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
+import { Suggestion } from "../models/suggestion";
 
-const Home: NextPage = () => {
+const Home: NextPage = ({
+  name,
+  location,
+  avatar_url,
+  portfolio,
+  suggestions,
+}: {
+  name: string;
+  location: string;
+  avatar_url: string;
+  portfolio: string;
+  suggestions: Suggestion[];
+}) => {
+  const [currentFilter, setCurrentFilter] = useState<string>("all");
   return (
     <div>
       <Head>
@@ -14,15 +30,48 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Flex bg="gray.100" p="8vh 10vw" justify="space-between" minH="100vh">
-        <Flex direction="column" w="28%">
-          <FilterTypes />
+        <Flex direction="column" w="28%" rowGap={8}>
+          <Profile
+            name={name}
+            location={location}
+            avatar_url={avatar_url}
+            portfolio={portfolio}
+          />
+          <FilterTypes setCurrentFilter={setCurrentFilter} />
         </Flex>
         <Flex direction="column" w="70%">
-          <Suggestions />
+          <Suggestions
+            currentFilter={currentFilter}
+            suggestionsData={suggestions}
+          />
         </Flex>
       </Flex>
     </div>
   );
 };
+
+export async function getStaticProps() {
+  const githubData = await fetch("https://api.github.com/users/kai4ik", {
+    headers: {
+      Authorization: `token ${process.env.GITHUB_ACCESS_TOKEN}`,
+    },
+  });
+  const githubJsonData = await githubData.json();
+
+  const suggestionsData = await fetch(
+    "http://localhost:3000/api/getSuggestions"
+  );
+  const suggestionsJsonData = await suggestionsData.json();
+
+  return {
+    props: {
+      avatar_url: githubJsonData.avatar_url,
+      name: githubJsonData.name,
+      location: githubJsonData.location,
+      portfolio: githubJsonData.blog,
+      suggestions: suggestionsJsonData.data,
+    },
+  };
+}
 
 export default Home;

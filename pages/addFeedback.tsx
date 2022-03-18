@@ -1,200 +1,116 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Center,
   VStack,
   SimpleGrid,
-  Input,
-  InputLeftAddon,
-  InputGroup,
-  GridItem,
-  Textarea,
   Heading,
   Flex,
-  Select,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  FormErrorMessage,
   Button,
-  Switch,
-  Text,
-  useBreakpointValue,
 } from "@chakra-ui/react";
 import { Icon } from "@chakra-ui/react";
 import { FcLinux } from "react-icons/fc";
-import { AiFillGithub } from "react-icons/ai";
 
-type objectInstance = {
-  title: string;
-  description: string;
-  category: string;
-  repo: string;
-  createdBy: string;
-};
+// form components - selects, textarea, simple input of type "text"
+import CategorySelect from "../components/formComponents/categorySelect";
+import RepoSelect from "../components/formComponents/repoSelect";
+import AuthorInput from "../components/formComponents/authorInput";
+import TextArea from "../components/formComponents/textarea";
+import TextInput from "../components/formComponents/textInput";
 
-const AddFeedback = () => {
-  const dataInstance: objectInstance = {
+// typescript defined type
+import { dataType } from "../types/dataType";
+
+const AddFeedback = ({
+  repos,
+}: {
+  repos: { html_url: string; img: string }[];
+}) => {
+  // state variable of type "dataType"
+  const [data, setData] = useState<dataType>({
     title: "",
     description: "",
-    category: "",
+    category: [],
     repo: "",
     createdBy: "",
+  });
+  const [showGithubProfile, setShowGithubProfile] = useState(false);
+  const [disabledSubmit, setDisabledSubmit] = useState(true);
+
+  // used to check whether "repo" property is required
+  // returns boolean - true if repo required, otherwise false
+  const ifRepoRequired = (): boolean => {
+    return data.category.some(
+      (element: any) => element.toLowerCase() !== "new app idea"
+    );
   };
 
-  const [data, setData] = useState(dataInstance);
-  const [githubProfile, setGithubProfile] = useState(true);
-  const inputSize = useBreakpointValue(["md", "xs"]);
-  const categories: Array<string> = [
-    "Feature",
-    "Bug (issue)",
-    "Enhancement",
-    "New App Idea",
-    "UI/UX",
-  ];
+  // used to validate data
+  // returns boolean - true if data passes validation, otherwise false
+  const validateData = (): boolean => {
+    return (
+      data.title.length > 3 &&
+      data.description.length > 19 &&
+      data.category.length !== 0 &&
+      data.createdBy.length > 0
+    );
+  };
 
-  const handleChange = (event: { target: { name: string; value: string } }) => {
-    let newData = { ...data };
-    newData[event.target.name as keyof objectInstance] = event.target.value;
-    setData(newData);
-    console.info(newData);
+  useEffect(() => {
+    const checkData: boolean = validateData();
+    setDisabledSubmit(
+      ifRepoRequired() ? !checkData && data.repo.length < 1 : !checkData
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  const handleSubmit = async () => {
+    const checkData: boolean = validateData();
+    if (checkData) {
+      if (ifRepoRequired()) {
+        if (data.repo.length > 0) {
+          const result = await fetch("/api/createSuggestion", {
+            method: "POST",
+            body: JSON.stringify(data),
+          });
+        }
+      } else {
+        const result = await fetch("/api/createSuggestion", {
+          method: "POST",
+          body: JSON.stringify(data),
+        });
+      }
+    }
   };
 
   return (
     <Center p="2rem">
       <VStack w="100%" spacing={5}>
-        <Flex align="center" fontSize={["2rem", "1.6rem"]} gridGap="6px">
-          <Heading as="h3" fontSize={["1.8rem", "1.4rem"]} color="purple.700">
+        <Flex align="center" fontSize={["2rem", "2.6rem"]} gridGap="6px">
+          <Heading as="h3" fontSize={["1.8rem", "2.6rem"]} color="purple.700">
             Give me an idea
           </Heading>
-          <Icon as={FcLinux} />
+          <Icon as={FcLinux} mt="8px" />
         </Flex>
-        <SimpleGrid columns={2} w={["86%", "40%"]} rowGap={5}>
-          <GridItem colSpan={2}>
-            <FormControl isRequired>
-              <FormLabel htmlFor="ideaName" fontSize={["1.1rem", "0.8rem"]}>
-                Idea Name
-              </FormLabel>
-              <Input
-                id="ideaName"
-                name="title"
-                placeholder="Title"
-                focusBorderColor="gray.300"
-                size={inputSize}
-                value={data.title}
-                onChange={handleChange}
-              />
-            </FormControl>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <FormControl isRequired>
-              <FormLabel htmlFor="category" fontSize={["1.1rem", "0.8rem"]}>
-                Category
-              </FormLabel>
-              <Select
-                name="category"
-                id="category"
-                size={inputSize}
-                focusBorderColor="gray.300"
-                value={data.category}
-                onChange={handleChange}
-              >
-                {categories.map((element, index) => (
-                  <option value={element} key={index}>
-                    {element}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <FormControl isRequired>
-              <FormLabel htmlFor="description" fontSize={["1.1rem", "0.8rem"]}>
-                Idea Description
-              </FormLabel>
-              <Textarea
-                name="description"
-                id="description"
-                placeholder="Description"
-                size={inputSize}
-                resize="vertical"
-                focusBorderColor="gray.300"
-                value={data.description}
-                onChange={handleChange}
-              />
-              <FormHelperText fontSize={["1rem", "0.5rem"]}>
-                must be at least 20 characters long
-              </FormHelperText>
-              <FormErrorMessage>Field is required.</FormErrorMessage>
-            </FormControl>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <FormControl isRequired>
-              <FormLabel htmlFor="githubRepo" fontSize={["1.1rem", "0.8rem"]}>
-                Github Repository
-              </FormLabel>
-              <Select
-                id="githubRepo"
-                size={inputSize}
-                focusBorderColor="gray.300"
-                name="repo"
-                value={data.repo}
-                onChange={handleChange}
-              >
-                {categories.map((element, index) => (
-                  <option value={element} key={index}>
-                    {element}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <FormControl isRequired>
-              <FormLabel htmlFor="createdBy" fontSize={["1.1rem", "0.8rem"]}>
-                Created by
-              </FormLabel>
-              <Flex
-                w={["100%", "50%"]}
-                h="30px"
-                justify="space-between"
-                align="center"
-                m="1.4vh 0 0.8vh 0"
-              >
-                <Text fontSize={["15px", "10px"]}> GitHub Profile </Text>
-                <Switch
-                  id="createdBy"
-                  size="sm"
-                  defaultChecked={true}
-                  onChange={() => setGithubProfile(!githubProfile)}
-                />
-              </Flex>
-              <InputGroup size={inputSize}>
-                <InputLeftAddon
-                  // eslint-disable-next-line react/no-children-prop
-                  children={
-                    githubProfile ? <Icon as={AiFillGithub} /> : "Username"
-                  }
-                  pointerEvents="none"
-                />
-                <Input
-                  name="createdBy"
-                  id="createdBy"
-                  placeholder={
-                    githubProfile ? "your github profile url" : "username"
-                  }
-                  focusBorderColor="gray.100"
-                  value={data.createdBy}
-                  onChange={handleChange}
-                />
-              </InputGroup>
-            </FormControl>
-          </GridItem>
+        <SimpleGrid columns={2} w={["86%", "40%"]} rowGap={8}>
+          <TextInput data={data} setData={setData} />
+          <CategorySelect
+            data={data}
+            setData={setData}
+            setShowGithubProfile={setShowGithubProfile}
+          />
+          <TextArea data={data} setData={setData} />
+          {showGithubProfile && (
+            <RepoSelect repos={repos} data={data} setData={setData} />
+          )}
+          <AuthorInput data={data} setData={setData} />
         </SimpleGrid>
         <Button
-          size="sm"
+          size="lg"
           bg="purple.700"
           color="gray.100"
+          isDisabled={disabledSubmit}
           _hover={{ background: "green.500" }}
+          onClick={handleSubmit}
         >
           Submit
         </Button>
@@ -202,5 +118,29 @@ const AddFeedback = () => {
     </Center>
   );
 };
+
+export async function getStaticProps() {
+  const data = await fetch("https://api.github.com/users/kai4ik/repos", {
+    headers: {
+      Authorization: `token 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`,
+    },
+  });
+  const jsonData = await data.json();
+  const repos: {
+    html_url: string;
+    img: string;
+  }[] = [];
+  jsonData.map((repo: { html_url: string; owner: any }) => {
+    repos.push({
+      html_url: repo.html_url,
+      img: repo.owner.avatar_url,
+    });
+  });
+  return {
+    props: {
+      repos: repos,
+    },
+  };
+}
 
 export default AddFeedback;

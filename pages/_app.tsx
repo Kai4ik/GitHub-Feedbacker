@@ -12,6 +12,23 @@ const theme = {
       },
     },
   },
+  textStyles: {
+    tag: {
+      fontWeight: 700,
+      fontSize: "1rem",
+    },
+    inputLabel: {
+      "font-weight": "500",
+      color: "gray.600",
+    },
+  },
+  layerStyles: {
+    leftBase: {
+      bg: "#fff",
+      borderRadius: "6px",
+      color: "#3182CE",
+    },
+  },
 };
 
 const customTheme = extendTheme(theme);

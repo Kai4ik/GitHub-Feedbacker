@@ -6,55 +6,64 @@ import {
   Tag,
   TagLeftIcon,
   TagLabel,
+  Avatar,
 } from "@chakra-ui/react";
 import { ChevronUpIcon, ChatIcon } from "@chakra-ui/icons";
+import { isWebUri } from "valid-url";
 
 const Suggestion = ({ data }) => {
   return (
-    <Flex bg="white" mt="2vh" borderRadius="6px" p="1rem ">
+    <Flex bg="white" mt="2vh" borderRadius="6px" p="2rem" color="gray.600">
       <Flex
         direction="column"
         bg="gray.100"
         borderRadius="6px"
-        w="30px"
-        h="36px"
+        w="50px"
+        h="60px"
         justify="center"
         align="center"
       >
-        <ChevronUpIcon fontSize="12px" color="blue.500" />
-        <Text fontSize="0.5rem" fontWeight="700" color="gray.600">
-          {data.upvotes}
-        </Text>
+        <ChevronUpIcon fontSize="20px" color="blue.500" />
+        <Text textStyle="tag">{data.upvotes}</Text>
       </Flex>
-      <Flex direction="column" m="2px 4%" gridGap="2px">
-        <Heading
-          as="h4"
-          fontSize="0.6rem"
-          color="gray.600"
-          textTransform="capitalize"
-        >
+      <Flex
+        direction="column"
+        m="2px 4%"
+        gridGap="2px"
+        fontSize="1.2rem"
+        maxW="70%"
+      >
+        <Heading as="h6" size="md" textTransform="capitalize">
           {data.title}
         </Heading>
-        <Text fontSize="0.6rem">{data.description}</Text>
+        <Text>{data.description}</Text>
         <Tag
-          fontSize="0.55rem"
-          fontWeight="700"
+          textStyle="tag"
           textTransform="capitalize"
           color="blue.500"
-          size="sm"
+          size="lg"
           mt="4px"
+          width="fit-content"
         >
-          {data.category}
+          <TagLabel> {data.category} </TagLabel>
         </Tag>
-        <Text fontSize="0.6rem" fontWeight="700" color="gray.600" mt="6px">
-          Created by:
-        </Text>
+        <Flex align="center" gridGap={3} mt={3}>
+          <Text textStyle="tag">Created by:</Text>
+          <Flex gridGap={1}>
+            <Avatar
+              name="Dan Abrahmov"
+              src="https://bit.ly/dan-abramov"
+              size="xs"
+            />
+            <Text>kai4ik</Text>
+          </Flex>
+        </Flex>
       </Flex>
       <Spacer />
       <Tag bg="transparent" height="50%" m="auto" color="gray.600">
-        <TagLeftIcon boxSize="10px" as={ChatIcon} mt="2px" />
-        <TagLabel fontWeight="700" fontSize="10px">
-          {data.comments}
+        <TagLeftIcon boxSize="20px" as={ChatIcon} mt="2px" />
+        <TagLabel fontWeight="700" fontSize="18px">
+          {data.comments.length}
         </TagLabel>
       </Tag>
     </Flex>

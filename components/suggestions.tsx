@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Flex,
   Tag,
@@ -10,10 +11,19 @@ import {
 import { Icon } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { FcIdea } from "react-icons/fc";
+import { useRouter } from "next/router";
+import SuggestionComponent from "./suggestion";
+import { Suggestion } from "../models/suggestion";
 
-import Suggestion from "./suggestion";
-
-const Suggestions = () => {
+const Suggestions = ({
+  currentFilter,
+  suggestionsData,
+}: {
+  currentFilter: string;
+  suggestionsData: Suggestion[];
+}) => {
+  const router = useRouter();
+  const [suggestions, setSuggestions] = useState(suggestionsData);
   const sortOptions: Array<string> = [
     "most upvotes",
     "least upvotes",
@@ -21,51 +31,71 @@ const Suggestions = () => {
     "least comments",
   ];
 
-  const suggestions: {
-    upvotes: number;
-    title: string;
-    description: string;
-    category: string;
-    comments: number;
-  }[] = [
-    {
-      upvotes: 112,
-      title: "add tags",
-      description: "Easier to search for solution",
-      category: "enhancement",
-      comments: 2,
-    },
-    {
-      upvotes: 98,
-      title: "add dark theme",
-      description: "Helps to dark mode",
-      category: "feature",
-      comments: 6,
-    },
-  ];
+  const handleSort = (event: { target: { value: any } }) => {
+    const sortedArray = suggestions;
+    switch (event.target.value) {
+      case "most upvotes":
+        sortedArray.sort((a, b) => {
+          return b.upvotes - a.upvotes;
+        });
+        break;
+      case "least upvotes":
+        sortedArray.sort((a, b) => {
+          return a.upvotes - b.upvotes;
+        });
+        break;
+      case "most comments":
+        sortedArray.sort((a, b) => {
+          return b.comments.length - a.comments.length;
+        });
+        break;
+      case "least comments":
+        sortedArray.sort((a, b) => {
+          return a.comments.length - b.comments.length;
+        });
+        break;
+      default:
+    }
+    setSuggestions([...sortedArray]);
+  };
+
+  useEffect(() => {
+    const capitalizedFilter = currentFilter
+      .split(" ")
+      .map((word) => {
+        return word[0].toUpperCase() + word.substring(1);
+      })
+      .join(" ");
+    const filteredArray = suggestionsData.filter((element) =>
+      element.category.includes(capitalizedFilter)
+    );
+    setSuggestions(currentFilter === "all" ? suggestionsData : filteredArray);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentFilter]);
 
   return (
     <>
       <Flex
         bg="#373E68"
         borderRadius="6px"
-        p="0.5rem 1rem"
+        p="1.6rem 1rem"
         align="center"
         mb="12px"
       >
-        <Tag fontSize="0.8rem" bg="transparent" color="#fff" mr="4%">
+        <Tag fontSize="1.4rem" bg="transparent" color="#fff" mr="4%">
           <Icon as={FcIdea} />
-          <TagLabel ml="6px">6 suggestions</TagLabel>
+          <TagLabel ml="6px">{suggestions.length} suggestions</TagLabel>
         </Tag>
         <Flex align="center" fontWeight="600" color="gray.200" gridGap="10px">
-          <Text fontSize="0.6rem" w="50px">
+          <Text fontSize="1.2rem" minW="80px">
             Sort by:
           </Text>
           <Select
             variant="unstyled"
-            fontSize="0.6rem"
-            iconSize="0.8rem"
+            fontSize="1.2rem"
+            iconSize="1.6rem"
             display="flex"
+            onChange={handleSort}
           >
             {sortOptions.map((element, index) => (
               <option
@@ -80,20 +110,21 @@ const Suggestions = () => {
         </Flex>
         <Spacer />
         <Button
-          size="xs"
+          size="md"
           leftIcon={<AddIcon />}
-          fontSize="7px"
+          fontSize="12px"
           bg="purple.500"
           color="gray.50"
           _hover={{ background: "gray.50", color: "purple.500" }}
+          onClick={() => router.push("/addFeedback")}
         >
-          <Text fontSize="0.6rem" textTransform="capitalize">
+          <Text fontSize="1.2rem" textTransform="capitalize">
             add feedback
           </Text>
         </Button>
       </Flex>
       {suggestions.map((element, index) => (
-        <Suggestion key={index} data={element} />
+        <SuggestionComponent key={index} data={element} />
       ))}
     </>
   );

@@ -1,6 +1,6 @@
 import { Button, Text, Flex } from "@chakra-ui/react";
 
-const FilterTypes = () => {
+const FilterTypes = ({ setCurrentFilter }) => {
   const types: Array<string> = [
     "all",
     "feature",
@@ -11,24 +11,18 @@ const FilterTypes = () => {
   ];
 
   return (
-    <Flex
-      p="1rem"
-      wrap="wrap"
-      gridGap="10px 6px"
-      bg="#fff"
-      borderRadius="6px"
-      color="#3182CE"
-    >
+    <Flex p="2rem" wrap="wrap" gridGap="10px 6px" layerStyle="leftBase">
       {types.map((type, index) => (
         <Button
-          size="xs"
+          size="lg"
           key={index}
           _hover={{
             background: "blue.500",
             color: "white",
           }}
+          onClick={() => setCurrentFilter(type)}
         >
-          <Text fontSize="0.6rem" textTransform="capitalize">
+          <Text fontSize="1.2rem" textTransform="capitalize">
             {type}
           </Text>
         </Button>

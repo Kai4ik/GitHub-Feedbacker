@@ -122,7 +122,7 @@ const AddFeedback = ({
 export async function getStaticProps() {
   const data = await fetch("https://api.github.com/users/kai4ik/repos", {
     headers: {
-      Authorization: `token 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`,
+      Authorization: `token ${process.env.GITHUB_ACCESS_TOKEN}`,
     },
   });
   const jsonData = await data.json();
